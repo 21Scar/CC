@@ -1,0 +1,12 @@
+project/
+├── server/
+│   ├── nms_server.py       # Implementação do servidor (NetTask e AlertFlow).
+│   └── config.json         # Arquivo JSON com as tarefas.
+├── agents/
+│   ├── nms_agent.py        # Código do agente.
+│   ├── metrics.py          # Funções para coletar métricas (ex.: ping, iperf).
+│   └── alerts.py           # Funções para gerar alertas críticos.
+└── tests/
+    ├── test_server.py      # Testes para o servidor.
+    ├── test_agent.py       # Testes para o agente.
+    └── test_communication.py # Testes de comunicação.

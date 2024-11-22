@@ -1,0 +1,17 @@
+{
+    "server": {
+        "host": "localhost",
+        "port": 8080
+    },
+    "database": {
+        "host": "localhost",
+        "port": 27017,
+        "name": "mydatabase",
+        "user": "dbuser",
+        "password": "dbpassword"
+    },
+    "security": {
+        "secretKey": "your-secret-key",
+        "tokenExpiration": 3600
+    }
+}
