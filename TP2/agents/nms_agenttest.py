@@ -19,7 +19,7 @@ def receive_task():
     while True:
         data, address = sock.recvfrom(4096)
         task = json.loads(data.decode('utf-8'))
-        print(f"Tarefa recebida: {task}")python3 nms_agent.py
+        print(f"Tarefa recebida: {task}")
 
         # Executa a tarefa recebida 
 

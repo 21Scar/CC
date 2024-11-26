@@ -1,0 +1,8 @@
+[
+    {
+        "task_id": "task-001",
+        "frequency": 30,
+        "metrics": ["latency", "packet_loss"],
+        "target": "10.0.4.10"
+    }
+]
