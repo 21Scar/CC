@@ -2,7 +2,25 @@
     {
         "task_id": "task-001",
         "frequency": 30,
-        "metrics": ["latency", "packet_loss"],
-        "target": "10.0.4.10"
+        "devices": [
+            {
+                "device_id": "agent-001",
+                "device_metrics": {
+                    "cpu_usage": true,
+                    "ram_usage": true,
+                    "interface_stats": ["eth0", "eth1"]
+                },
+                "link_metrics": {
+                    "latency": {"active": true, "destination": "10.0.0.2"},
+                    "packet_loss": {"active": true},
+                    "bandwidth": {"active": true, "duration": 10}
+                },
+                "alertflow_conditions": {
+                    "cpu_usage": 80,
+                    "ram_usage": 90,
+                    "packet_loss": 5
+                }
+            }
+        ]
     }
 ]

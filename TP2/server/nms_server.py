@@ -2,61 +2,96 @@ import socket
 import json
 
 # Configuração inicial do servidor
-UDP_IP = "127.0.0.1"  # Localhost
-UDP_PORT = 5005       # Porta de comunicação
+UDP_IP = "127.0.0.1"
+UDP_PORT = 5005
 
 # Inicializa o socket UDP
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((UDP_IP, UDP_PORT))
 
+# Função para carregar e interpretar tarefas
+def parse_tasks(file_path):
+    """
+    Lê e interpreta o ficheiro JSON contendo as tarefas.
+    :param file_path: Caminho do ficheiro JSON.
+    :return: Lista de tarefas (ou levanta erro se inválido).
+    """
+    try:
+        with open(file_path, 'r') as file:
+            tasks = json.load(file)
+
+        # Valida a estrutura das tarefas
+        for task in tasks:
+            if "task_id" not in task or "frequency" not in task or "devices" not in task:
+                raise ValueError(f"Tarefa inválida: {task}")
+            for device in task["devices"]:
+                if "device_id" not in device or "device_metrics" not in device or "link_metrics" not in device:
+                    raise ValueError(f"Dispositivo inválido na tarefa {task['task_id']}: {device}")
+
+        return tasks
+    except FileNotFoundError:
+        print(f"Erro: Ficheiro {file_path} não encontrado.")
+        return None
+    except json.JSONDecodeError as e:
+        print(f"Erro ao interpretar o JSON: {e}")
+        return None
+    except ValueError as e:
+        print(f"Erro de validação: {e}")
+        return None
+
+
+# Caminho para o ficheiro JSON com tarefas
+TASKS_FILE = "tasks.json"
+
+# Carregar e interpretar as tarefas
+tasks = parse_tasks(TASKS_FILE)
+if tasks:
+    print(f"Tarefas carregadas: {tasks}")
+else:
+    print("Erro ao carregar tarefas.")
+
+# Registro de agentes e tarefas pendentes
+agents = {}  # {agent_id: (IP, porta)}
+pending_tasks = {}  # {agent_id: [tarefas]}
+
 print("Servidor UDP iniciado, aguardando dados...")
 
+# Loop principal do servidor
 while True:
-    # Recebe mensagem dos agentes
     data, addr = sock.recvfrom(1024)
     print(f"Recebido de {addr}: {data.decode()}")
-    
-    # Exemplo: Parse de uma mensagem JSON
+
     try:
         message = json.loads(data.decode())
-        print("Mensagem interpretada:", message)
+
+        if message.get("type") == "register":
+            # Regista o agente
+            agent_id = message["agent_id"]
+            agents[agent_id] = addr
+            print(f"Agente registrado: {agent_id} em {addr}")
+
+            # Atribuir tarefas ao agente
+            if tasks:
+                agent_tasks = [task for task in tasks if any(d["device_id"] == agent_id for d in task["devices"])]
+                pending_tasks[agent_id] = agent_tasks
+                print(f"Tarefas atribuídas ao agente {agent_id}: {agent_tasks}")
+            else:
+                pending_tasks[agent_id] = []
+
+            # Envia confirmação de registo ao agente
+            response = {"status": "success", "message": "Agent registered"}
+            sock.sendto(json.dumps(response).encode(), addr)
+
+        elif message.get("type") == "task_request":
+            # Envia as tarefas pendentes ao agente
+            agent_id = message["agent_id"]
+            if agent_id in pending_tasks and pending_tasks[agent_id]:
+                task = pending_tasks[agent_id].pop(0)  # Remove e envia a próxima tarefa
+                task_message = {"type": "task", "task": task}
+                sock.sendto(json.dumps(task_message).encode(), agents[agent_id])
+                print(f"Tarefa enviada para o agente {agent_id}: {task}")
+            else:
+                print(f"Sem tarefas pendentes para o agente {agent_id}.")
+
     except json.JSONDecodeError:
         print("Mensagem recebida não é um JSON válido.")
-
-
-# Para testar o servidor, execute o script e envie uma mensagem de alerta de um agente:
-# $ python3 nms_server.py
-# Servidor UDP iniciado, aguardando dados...
-# Recebido de ('
-#
-#
-#
-#
-#
-#
-#
-
-# ', 5005): b'{\n  "type": "alert",\n  "agent_id": "agent-001",\n  "metric": "cpu_usage",\n  "value": 85,\n  "threshold": 80,\n  "timestamp": "2024-11-16T12:00:00Z"\n}\n'
-# Mensagem interpretada: {'type': 'alert', 'agent_id': 'agent-001', 'metric': 'cpu_usage', 'value': 85, 'threshold': 80, 'timestamp': '2024-11-16T12:00:00Z'}
-# Recebido de ('
-#   
-#
-#
-#
-#
-
-# ', 5005): b'{\n  "type": "alert",\n  "agent_id": "agent-002",\n  "metric": "memory_usage",\n  "value": 95,\n  "threshold": 90,\n  "timestamp": "2024-11-16T12:00:00Z"\n}\n'
-# Mensagem interpretada: {'type': 'alert', 'agent_id': 'agent-002', 'metric': 'memory_usage', 'value': 95, 'threshold': 90, 'timestamp': '2024-11-16T12:00:00Z'}
-# Recebido de ('
-#
-#
-#
-#
-#
-#
-#   
-#
-
-# ', 5005): b'{\n  "type": "alert",\n  "agent_id": "agent-003",\n  "metric": "disk_usage",\n  "value": 75,\n  "threshold": 70,\n  "timestamp": "2024-11-16T12:00:00Z"\n}\n'
-# Mensagem interpretada: {'type': 'alert', 'agent_id': 'agent-003', 'metric': 'disk_usage', 'value': 75, 'threshold': 70, 'timestamp': '2024-11-16T12:00:00Z'}
-# Recebido de ('
