@@ -1,6 +1,6 @@
 import subprocess
 import re
-#iperf e ping
+
 def get_latency(target_ip):
     """
     Mede a latência (RTT) para um destino usando o comando 'ping'.
@@ -46,10 +46,10 @@ def get_packet_loss(target_ip):
             packet_loss = int(match.group(1))
             return packet_loss
         else:
-            return None
+            return 0
     except Exception as e:
         print(f"Erro ao medir perda de pacotes: {e}")
-        return None
+        return 0
 
 def get_bandwidth(target_ip):
     """
@@ -73,6 +73,9 @@ def get_bandwidth(target_ip):
             return bandwidth
         else:
             return None
+    except FileNotFoundError:
+        print("Erro: 'iperf3' não encontrado. Certifique-se de que está instalado.")
+        return None
     except Exception as e:
         print(f"Erro ao medir largura de banda: {e}")
         return None
@@ -89,9 +92,3 @@ def collect_metrics(target_ip):
         "bandwidth": get_bandwidth(target_ip)
     }
     return metrics
-
-if __name__ == "__main__":
-    # Exemplo de uso com um destino (substitua pelo IP do servidor ou outro destino)
-    target_ip = "10.0.4.10"  # IP do servidor
-    metrics = collect_metrics(target_ip)
-    print("Métricas coletadas:", metrics)

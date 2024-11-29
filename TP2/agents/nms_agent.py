@@ -5,10 +5,11 @@ from metrics import collect_metrics  # Funções para coleta de métricas
 
 UDP_IP = "127.0.0.1"
 UDP_PORT = 5005
+TCP_PORT = 6000
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-# Registra o agente no servidor
+# Regista o agente no servidor
 register_message = {
     "type": "register",
     "agent_id": "agent-001",
@@ -17,6 +18,15 @@ register_message = {
 }
 sock.sendto(json.dumps(register_message).encode(), (UDP_IP, UDP_PORT))
 print(f"Mensagem de registo enviada para o servidor: {register_message}")
+
+# Função para enviar alertas via TCP
+def send_alert(alert_data):
+    try:
+        with socket.create_connection((UDP_IP, TCP_PORT)) as tcp_sock:
+            tcp_sock.sendall(json.dumps(alert_data).encode())
+            print(f"Alerta enviado: {alert_data}")
+    except Exception as e:
+        print(f"Erro ao enviar alerta: {e}")
 
 # Definir um timeout de 5 segundos para não ficar bloqueado
 sock.settimeout(5)
@@ -28,7 +38,7 @@ try:
     print(f"Resposta recebida do servidor: {response}")
 
     if response.get("status") == "success":
-        print("Agente registrado com sucesso!")
+        print("Agente registado com sucesso!")
 
         # Solicitar tarefa ao servidor
         task_request = {"type": "task_request", "agent_id": "agent-001"}
@@ -47,6 +57,14 @@ try:
                 frequency = task["frequency"]
                 while True:
                     metrics = collect_metrics(device["link_metrics"]["latency"]["destination"])
+
+                    # Validar resultados das métricas
+                    if metrics["latency"] is None:
+                        print("Aviso: Métrica de latência não disponível.")
+                    if metrics["bandwidth"] is None:
+                        print("Aviso: Métrica de largura de banda não disponível.")
+
+                    # Enviar resultados das métricas via UDP
                     results_message = {
                         "type": "metrics",
                         "agent_id": "agent-001",
@@ -54,6 +72,21 @@ try:
                     }
                     sock.sendto(json.dumps(results_message).encode(), (UDP_IP, UDP_PORT))
                     print(f"Métricas enviadas para o servidor: {metrics}")
+
+                    # Verificar condições de alerta
+                    conditions = device["alertflow_conditions"]
+
+                    # Processar alertas apenas para métricas válidas
+                    if metrics["latency"] is not None and metrics["latency"] > conditions["cpu_usage"]:
+                        alert = {
+                            "type": "alert",
+                            "agent_id": "agent-001",
+                            "metric": "latency",
+                            "value": metrics["latency"],
+                            "threshold": conditions["cpu_usage"]
+                        }
+                        send_alert(alert)
+
                     time.sleep(frequency)
 
 except socket.timeout:
