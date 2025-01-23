@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<scenario name="/home/core/Downloads/CC-Topo-2024.xml">
+  <networks/>
+  <devices>
+    <device id="1" name="n1" type="router" class="" image="">
+      <position x="451" y="171" lat="47.57761234513531" lon="-122.12624489710292" alt="2.0"/>
+      <services>
+        <service name="zebra"/>
+        <service name="OSPFv2"/>
+        <service name="OSPFv3"/>
+        <service name="IPForward"/>
+      </services>
+    </device>
+    <device id="2" name="n2" type="router" class="" image="">
+      <position x="602" y="301" lat="47.576430640971374" lon="-122.12421021298441" alt="2.0"/>
+      <services>
+        <service name="zebra"/>
+        <service name="OSPFv2"/>
+        <service name="OSPFv3"/>
+        <service name="IPForward"/>
+      </services>
+    </device>
+    <device id="3" name="n3" type="router" class="" image="">
+      <position x="473" y="458" lat="47.57500347038928" lon="-122.12594845305917" alt="2.0"/>
+      <services>
+        <service name="zebra"/>
+        <service name="OSPFv2"/>
+        <service name="OSPFv3"/>
+        <service name="IPForward"/>
+      </services>
+    </device>
+    <device id="4" name="n4" type="router" class="" image="">
+      <position x="311" y="331" lat="47.576157936223076" lon="-122.12813135919959" alt="2.0"/>
+      <services>
+        <service name="zebra"/>
+        <service name="OSPFv2"/>
+        <service name="OSPFv3"/>
+        <service name="IPForward"/>
+      </services>
+    </device>
+    <device id="5" name="PC1" type="host" class="" image="">
+      <position x="452" y="30" lat="47.578894009501695" lon="-122.12623142237366" alt="2.0"/>
+      <services>
+        <service name="DefaultRoute"/>
+        <service name="SSH"/>
+        <service name="UserDefined"/>
+      </services>
+    </device>
+    <device id="6" name="PC2" type="host" class="" image="">
+      <position x="886" y="304" lat="47.57640337056045" lon="-122.12038338987405" alt="2.0"/>
+      <services>
+        <service name="DefaultRoute"/>
+        <service name="SSH"/>
+      </services>
+    </device>
+    <device id="7" name="PC3" type="host" class="" image="">
+      <position x="472" y="616" lat="47.57356717027804" lon="-122.12596192778842" alt="2.0"/>
+      <services>
+        <service name="DefaultRoute"/>
+        <service name="SSH"/>
+      </services>
+    </device>
+    <device id="8" name="PC4" type="host" class="" image="">
+      <position x="43" y="332" lat="47.57614884604034" lon="-122.13174258664174" alt="2.0"/>
+      <services>
+        <service name="DefaultRoute"/>
+        <service name="SSH"/>
+      </services>
+    </device>
+  </devices>
+  <links>
+    <link node1="1" node2="2">
+      <iface1 id="0" name="eth0" mac="00:00:00:aa:00:10" ip4="10.0.0.1" ip4_mask="24"/>
+      <iface2 id="0" name="eth0" mac="00:00:00:aa:00:11" ip4="10.0.0.2" ip4_mask="24"/>
+      <options delay="0" bandwidth="10000000" loss="0.0" dup="0" jitter="0" unidirectional="0"/>
+    </link>
+    <link node1="2" node2="3">
+      <iface1 id="1" name="eth1" mac="00:00:00:aa:00:12" ip4="10.0.1.1" ip4_mask="24"/>
+      <iface2 id="0" name="eth0" mac="00:00:00:aa:00:13" ip4="10.0.1.2" ip4_mask="24"/>
+      <options delay="5000" bandwidth="5000000" loss="1.0" dup="0" jitter="0" unidirectional="0"/>
+    </link>
+    <link node1="3" node2="4">
+      <iface1 id="1" name="eth1" mac="00:00:00:aa:00:14" ip4="10.0.2.1" ip4_mask="24"/>
+      <iface2 id="0" name="eth0" mac="00:00:00:aa:00:15" ip4="10.0.2.2" ip4_mask="24"/>
+      <options delay="10000" bandwidth="2000000" loss="5.0" dup="0" jitter="0" unidirectional="0"/>
+    </link>
+    <link node1="4" node2="1">
+      <iface1 id="1" name="eth1" mac="00:00:00:aa:00:16" ip4="10.0.3.1" ip4_mask="24"/>
+      <iface2 id="1" name="eth1" mac="00:00:00:aa:00:17" ip4="10.0.3.2" ip4_mask="24"/>
+      <options delay="20000" bandwidth="1000000" loss="10.0" dup="10" jitter="0" unidirectional="0"/>
+    </link>
+    <link node1="5" node2="1">
+      <iface1 id="0" name="eth0" mac="00:00:00:aa:00:18" ip4="10.0.4.10" ip4_mask="24"/>
+      <iface2 id="2" name="eth2" mac="00:00:00:aa:00:19" ip4="10.0.4.1" ip4_mask="24"/>
+      <options delay="0" bandwidth="10000000" loss="0.0" dup="0" jitter="0" unidirectional="0"/>
+    </link>
+    <link node1="6" node2="2">
+      <iface1 id="0" name="eth0" mac="00:00:00:aa:00:1a" ip4="10.0.5.10" ip4_mask="24"/>
+      <iface2 id="2" name="eth2" mac="00:00:00:aa:00:1b" ip4="10.0.5.1" ip4_mask="24"/>
+      <options delay="0" bandwidth="10000000" loss="0.0" dup="0" jitter="0" unidirectional="0"/>
+    </link>
+    <link node1="7" node2="3">
+      <iface1 id="0" name="eth0" mac="00:00:00:aa:00:1c" ip4="10.0.6.10" ip4_mask="24"/>
+      <iface2 id="2" name="eth2" mac="00:00:00:aa:00:1d" ip4="10.0.6.1" ip4_mask="24"/>
+      <options delay="0" bandwidth="10000000" loss="0.0" dup="0" jitter="0" unidirectional="0"/>
+    </link>
+    <link node1="8" node2="4">
+      <iface1 id="0" name="eth0" mac="00:00:00:aa:00:1e" ip4="10.0.7.10" ip4_mask="24"/>
+      <iface2 id="2" name="eth2" mac="00:00:00:aa:00:1f" ip4="10.0.7.1" ip4_mask="24"/>
+      <options delay="0" bandwidth="10000000" loss="0.0" dup="0" jitter="0" unidirectional="0"/>
+    </link>
+  </links>
+  <emane_global_configuration>
+    <emulator/>
+    <core>
+      <configuration name="platform_id_start" value="1"/>
+      <configuration name="nem_id_start" value="1"/>
+      <configuration name="link_enabled" value="1"/>
+      <configuration name="loss_threshold" value="30"/>
+      <configuration name="link_interval" value="1"/>
+      <configuration name="link_timeout" value="4"/>
+    </core>
+  </emane_global_configuration>
+  <service_configurations>
+    <service name="UserDefined" node="5">
+      <startups>
+        <startup>mkdir -p /run/systemd/resolve</startup>
+        <startup>touch /run/systemd/resolve/stub-resolv.conf</startup>
+        <startup>sh preenche_resolvconf.sh</startup>
+      </startups>
+      <files>
+        <file name="preenche_resolvconf.sh"><![CDATA[preenche_resolvconf.sh
+echo "# -- gerado pela script de arranque..." >> /etc/resolv.conf
+echo "domain cc2024" >> /etc/resolv.conf
+echo "nameserver 10.0.4.10" >> /etc/resolv.conf
+echo "" >> /etc/resolv.conf ]]></file>
+      </files>
+    </service>
+  </service_configurations>
+  <session_origin lat="47.5791667" lon="-122.132322" alt="2.0" scale="150.0"/>
+  <session_options>
+    <configuration name="controlnet" value=""/>
+    <configuration name="controlnet0" value=""/>
+    <configuration name="controlnet1" value=""/>
+    <configuration name="controlnet2" value=""/>
+    <configuration name="controlnet3" value=""/>
+    <configuration name="controlnet_updown_script" value=""/>
+    <configuration name="enablerj45" value="1"/>
+    <configuration name="preservedir" value="0"/>
+    <configuration name="enablesdt" value="0"/>
+    <configuration name="sdturl" value="tcp://127.0.0.1:50000/"/>
+    <configuration name="ovs" value="0"/>
+  </session_options>
+  <session_metadata>
+    <configuration name="canvas c1" value="{name {Canvas1}}"/>
+    <configuration name="global_options" value="interface_names=no ip_addresses=yes ipv6_addresses=yes node_labels=yes link_labels=yes show_api=no background_images=no annotations=yes grid=yes traffic_start=0"/>
+  </session_metadata>
+  <default_services>
+    <node type="mdr">
+      <service name="zebra"/>
+      <service name="OSPFv3MDR"/>
+      <service name="IPForward"/>
+    </node>
+    <node type="PC">
+      <service name="DefaultRoute"/>
+    </node>
+    <node type="prouter"/>
+    <node type="router">
+      <service name="zebra"/>
+      <service name="OSPFv2"/>
+      <service name="OSPFv3"/>
+      <service name="IPForward"/>
+    </node>
+    <node type="host">
+      <service name="DefaultRoute"/>
+      <service name="SSH"/>
+    </node>
+  </default_services>
+</scenario>

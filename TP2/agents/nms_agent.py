@@ -4,9 +4,10 @@ import time
 from metrics import collect_metrics  # Funções para coleta de métricas
 
 # Configurações do servidor (IP e portas para UDP e TCP)
-UDP_IP = "127.0.0.1"  # Endereço IP do servidor
+UDP_IP = "10.0.7.10"  # Endereço IP do servidor
 UDP_PORT = 5005       # Porta UDP para comunicação
 TCP_PORT = 6000       # Porta TCP para envio de alertas
+IPERF_PORT = 5201     # Porta para o iperf
 
 # Inicializa o socket UDP
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -38,6 +39,26 @@ def send_alert(alert_data):
 
 # Define um timeout para evitar bloqueio em caso de falha de resposta
 sock.settimeout(5)
+
+# Função para verificar limites e gerar alertas
+def check_alerts(metrics, alertflow_conditions):
+    """
+    Verifica se as métricas excedem os limites definidos e gera alertas.
+    :param metrics: Dicionário com as métricas coletadas.
+    :param alertflow_conditions: Dicionário com os limites para gerar alertas.
+    """
+    for metric, value in metrics.items():
+        if metric in alertflow_conditions and value > alertflow_conditions[metric]:
+            alert_data = {
+                "type": "alert",
+                "agent_id": "agent-001",
+                "metric": metric,
+                "value": value,
+                "threshold": alertflow_conditions[metric],
+                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+            }
+            print(f"Alerta: {alert_data}")  # Imprime o alerta no terminal
+            send_alert(alert_data)
 
 try:
     # Aguarda a resposta de registro do servidor
@@ -91,15 +112,8 @@ try:
                             # Verifica se alguma métrica excede os limites definidos para alertas
                             conditions = device["alertflow_conditions"]
 
-                            if metrics["latency"] is not None and metrics["latency"] > conditions["cpu_usage"]:
-                                alert = {
-                                    "type": "alert",
-                                    "agent_id": "agent-001",
-                                    "metric": "latency",
-                                    "value": metrics["latency"],
-                                    "threshold": conditions["cpu_usage"]
-                                }
-                                send_alert(alert)
+                            # Verifica e envia alertas para todas as métricas
+                            check_alerts(metrics, conditions)
 
                             # Aguarda o intervalo definido antes de repetir a coleta
                             time.sleep(frequency)

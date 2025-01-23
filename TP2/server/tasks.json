@@ -11,7 +11,7 @@
                     "interface_stats": ["eth0", "eth1"]
                 },
                 "link_metrics": {
-                    "latency": {"active": true, "destination": "10.0.0.2"},
+                    "latency": {"active": true, "destination": "10.0.7.10"},
                     "packet_loss": {"active": true},
                     "bandwidth": {"active": true, "duration": 10}
                 },

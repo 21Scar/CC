@@ -2,11 +2,13 @@ import socket
 import json
 import threading
 import time
+import subprocess
 
 # Configuração inicial do servidor
-UDP_IP = "127.0.0.1"
+UDP_IP = "10.0.7.10"
 UDP_PORT = 5005
 TCP_PORT = 6000
+IPERF_PORT = 5201
 
 # Inicializa o socket UDP
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -20,6 +22,27 @@ tcp_sock.listen(5)
 # Dicionário para armazenar métricas dos agentes
 metrics_data = {}  # {agent_id: [metrics]}
 agents = {}  # {agent_id: (IP, porta)}
+
+# Função para iniciar o servidor iperf3 no background
+def start_iperf3_server(port=IPERF_PORT):
+    """
+    Inicia o servidor iperf3 no background usando a porta especificada.
+    """
+    try:
+        print(f"Iniciando servidor iperf3 no background na porta {port}...")
+        process = subprocess.Popen(["iperf3", "-s", "-p", str(port)])
+        return process
+    except Exception as e:
+        print(f"Erro ao iniciar o servidor iperf3: {e}")
+        return None
+    
+# Iniciar o servidor iperf3
+iperf_process = start_iperf3_server()
+
+# Verificar se o processo foi iniciado com sucesso
+if iperf_process is None:
+    print("Falha ao iniciar o servidor iperf3. Encerrando...")
+    exit(1)
 
 # Função para carregar e interpretar tarefas
 def parse_tasks(file_path):
@@ -89,6 +112,7 @@ def show_metrics():
 # Inicia a thread para lidar com conexões TCP (alertas)
 tcp_thread = threading.Thread(target=handle_alerts, daemon=True)
 tcp_thread.start()
+
 
 print("Servidor UDP iniciado, aguardando dados...")
 

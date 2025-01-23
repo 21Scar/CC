@@ -1,5 +1,6 @@
 import subprocess
 import re
+import psutil
 
 def get_latency(target_ip):
     """
@@ -79,6 +80,18 @@ def get_bandwidth(target_ip):
     except Exception as e:
         print(f"Erro ao medir largura de banda: {e}")  # Imprime erro caso o comando falhe
         return None
+        
+def get_cpu_usage():
+    """
+    Retorna o uso de CPU em porcentagem
+    """
+    return psutil.cpu_percent(interval=1)
+    
+def get_ram_usage():
+    """
+    Retorna o uso de memória RAM em porcentagem
+    """
+    return psutil.virtual_memory().percent        
 
 def collect_metrics(target_ip):
     """
@@ -89,6 +102,8 @@ def collect_metrics(target_ip):
     metrics = {
         "latency": get_latency(target_ip),         # Mede a latência
         "packet_loss": get_packet_loss(target_ip), # Mede a perda de pacotes
-        "bandwidth": get_bandwidth(target_ip)      # Mede a largura de banda
+        "bandwidth": get_bandwidth(target_ip),     # Mede a largura de banda
+        "cpu_usage": get_cpu_usage(),              # Mede o uso do cpu
+        "ram_usage": get_ram_usage()               # Mede o uso de ram
     }
     return metrics  # Retorna as métricas em formato de dicionário
